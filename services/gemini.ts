@@ -1,7 +1,8 @@
+
 import { GoogleGenAI, Type, Schema, GenerateContentResponse } from "@google/genai";
 import { StudyPackData, UserInput, ImageSize, ChatMessage } from "../types";
 
-// Schema for text content only
+// Schema for text content including Important Questions
 const STUDY_PACK_SCHEMA: Schema = {
   type: Type.OBJECT,
   properties: {
@@ -57,6 +58,45 @@ const STUDY_PACK_SCHEMA: Schema = {
         required: ["q", "a"],
       },
     },
+    important_questions: {
+      type: Type.OBJECT,
+      properties: {
+        one_mark: {
+          type: Type.ARRAY,
+          items: {
+            type: Type.OBJECT,
+            properties: {
+              question: { type: Type.STRING },
+              solution: { type: Type.STRING },
+            },
+            required: ["question", "solution"],
+          },
+        },
+        three_mark: {
+          type: Type.ARRAY,
+          items: {
+            type: Type.OBJECT,
+            properties: {
+              question: { type: Type.STRING },
+              solution: { type: Type.STRING },
+            },
+            required: ["question", "solution"],
+          },
+        },
+        five_mark: {
+          type: Type.ARRAY,
+          items: {
+            type: Type.OBJECT,
+            properties: {
+              question: { type: Type.STRING },
+              solution: { type: Type.STRING },
+            },
+            required: ["question", "solution"],
+          },
+        },
+      },
+      required: ["one_mark", "three_mark", "five_mark"],
+    },
     quiz: {
       type: Type.OBJECT,
       properties: {
@@ -80,7 +120,7 @@ const STUDY_PACK_SCHEMA: Schema = {
       required: ["instructions", "questions"],
     },
   },
-  required: ["meta", "summary", "notes", "key_terms", "flashcards", "quiz"],
+  required: ["meta", "summary", "notes", "key_terms", "flashcards", "important_questions", "quiz"],
 };
 
 export const generateStudyPack = async (input: UserInput): Promise<StudyPackData> => {
@@ -92,7 +132,7 @@ export const generateStudyPack = async (input: UserInput): Promise<StudyPackData
   const ai = new GoogleGenAI({ apiKey });
 
   const textPrompt = `
-Create a study pack from the content provided.
+Create a comprehensive study pack from the content provided.
 
 GRADE: ${input.grade}
 SUBJECT: ${input.subject}
@@ -101,11 +141,14 @@ LANGUAGE: ${input.language}
 
 Constraints:
 - important_points: Exactly 20 items. Comprehensive coverage.
-- notes: Create detailed, explanatory study notes divided into logical sections. Each section must have a title and a comprehensive explanation block (at least 3-4 sentences per section). Cover all main topics.
+- notes: Create detailed, explanatory study notes divided into logical sections.
 - key_terms: Exactly 20 items.
 - flashcards: Exactly 20 items.
-- quiz questions: Exactly 20 questions.
-- Be concise in the summary, but detailed in the 'notes'.
+- important_questions: Generate the most important questions categorized by marks:
+  - one_mark: 10 Short answer/objective questions with concise solutions.
+  - three_mark: 5 Descriptive/conceptual questions with detailed solutions.
+  - five_mark: 3 Long/comprehensive/analytical questions with very thorough solutions.
+- quiz questions: Exactly 20 multiple-choice questions.
 
 CHAPTER TEXT:
 ${input.chapterText ? input.chapterText : "[See attached PDF content]"}
@@ -129,7 +172,7 @@ ${input.chapterText ? input.chapterText : "[See attached PDF content]"}
           responseMimeType: "application/json",
           responseSchema: STUDY_PACK_SCHEMA,
           thinkingConfig: { thinkingBudget: 0 },
-          systemInstruction: "You are an expert educational content creator.",
+          systemInstruction: "You are an expert educational content creator. Your goal is to help students excel in exams by providing the most relevant and high-quality study materials.",
         },
       });
 
@@ -159,7 +202,7 @@ export const chatWithAI = async (message: string, context?: string, history: Cha
   const chat = ai.chats.create({
     model: 'gemini-3-flash-preview',
     config: {
-      systemInstruction: "You are a helpful study assistant for Notepilot. Your goal is to help students understand their study materials. Keep explanations clear, engaging, and accurate. If asked to 'explain like I'm 5', use simple metaphors.",
+      systemInstruction: "You are a helpful study assistant for Notepilot. Your goal is to help students understand their study materials. Keep explanations clear, engaging, and accurate.",
     },
   });
 

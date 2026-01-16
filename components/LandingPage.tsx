@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import { Sparkles, Zap, ArrowRight, CheckCircle, FileText, Moon, Sun, BookOpen, Layers, BrainCircuit, GraduationCap } from 'lucide-react';
 
@@ -199,7 +198,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onLogin,
   );
 };
 
-const FeatureItem = ({ icon, title, desc, color, isVisible, index }: { icon: React.ReactNode, title: string, desc: string, color: string, isVisible: boolean, index: number }) => (
+// Using React.FC to properly type functional components and handle React props like 'key'
+const FeatureItem: React.FC<{ icon: React.ReactNode, title: string, desc: string, color: string, isVisible: boolean, index: number }> = ({ icon, title, desc, color, isVisible, index }) => (
   <div 
     className={`p-8 rounded-xl bg-white dark:bg-black border border-zinc-100 dark:border-zinc-800 shadow-sm hover:shadow-md transition-all duration-700 ease-out transform
       ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}
@@ -214,7 +214,7 @@ const FeatureItem = ({ icon, title, desc, color, isVisible, index }: { icon: Rea
   </div>
 );
 
-const StatItem = ({ label, value, icon }: { label: string, value: string, icon: React.ReactNode }) => (
+const StatItem: React.FC<{ label: string, value: string, icon: React.ReactNode }> = ({ label, value, icon }) => (
    <div className="flex flex-col items-center gap-1">
       <div className="mb-2">{icon}</div>
       <div className="text-xl font-extrabold text-black dark:text-white leading-tight">{value}</div>
@@ -222,7 +222,7 @@ const StatItem = ({ label, value, icon }: { label: string, value: string, icon: 
    </div>
 );
 
-const BulletItem = ({ text }: { text: string }) => (
+const BulletItem: React.FC<{ text: string }> = ({ text }) => (
    <li className="flex items-center gap-3">
       <div className="w-5 h-5 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
          <CheckCircle className="w-4 h-4 text-accent" />

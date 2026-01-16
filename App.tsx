@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { generateStudyPack } from './services/gemini';
 import { InputForm } from './components/InputForm';
@@ -8,12 +9,13 @@ import { LandingPage } from './components/LandingPage';
 import { Sidebar } from './components/Sidebar';
 import { MindMap } from './components/MindMap';
 import { Visuals } from './components/Visuals';
+import { ImportantQuestions } from './components/ImportantQuestions';
 import { ThemeCustomizer } from './components/ThemeCustomizer';
 import { ChatBot } from './components/ChatBot';
 import { UserInput, AppStatus, StoredStudyPack, User, GeneratedImage, AppTheme, AppFont, AppShape } from './types';
-import { LayoutDashboard, FileText, Book, Layers, BrainCircuit, ChevronRight, ChevronLeft, Menu, ArrowLeft, Lightbulb, ChevronDown, Palette, Sparkles } from 'lucide-react';
+import { LayoutDashboard, FileText, Book, Layers, BrainCircuit, ChevronRight, ChevronLeft, Menu, ArrowLeft, Lightbulb, ChevronDown, Palette, Sparkles, HelpCircle } from 'lucide-react';
 
-type Tab = 'summary' | 'notes' | 'terms' | 'flashcards' | 'quiz' | 'mindmap' | 'visuals';
+type Tab = 'summary' | 'notes' | 'terms' | 'questions' | 'flashcards' | 'quiz' | 'mindmap' | 'visuals';
 type ViewState = 'LANDING' | 'AUTH' | 'THEME_PICKER' | 'DASHBOARD' | 'CREATE' | 'VIEW_PACK';
 
 export default function App() {
@@ -222,7 +224,6 @@ export default function App() {
         return (
           <div className="space-y-6 animate-fade-in pb-12">
             <div className={`bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-8 shadow-sm relative overflow-hidden group ${currentTheme === 'original' ? 'bg-theme-gradient text-white border-none' : 'border-l-4 border-l-primary'}`}>
-               {/* Ask AI Tag */}
                <button 
                   onClick={() => handleAskAI(`Summary: ${activePack.summary.tl_dr}`)}
                   className={`absolute top-4 right-4 z-10 flex items-center gap-1.5 px-3 py-1.5 shadow-lg rounded-full text-[10px] font-bold uppercase tracking-wider hover:scale-105 transition-all opacity-0 group-hover:opacity-100 ${currentTheme === 'original' ? 'bg-white text-[#7C5DFA] border-none' : 'bg-white dark:bg-zinc-800 border border-theme text-theme'}`}
@@ -255,7 +256,6 @@ export default function App() {
                       {idx + 1}
                     </div>
                     <p className="text-zinc-700 dark:text-zinc-300 leading-relaxed pt-1 flex-1">{point}</p>
-                    {/* Ask AI Button for Item */}
                     <button 
                        onClick={() => handleAskAI(`Study Point: ${point}`)}
                        className="p-1 text-theme opacity-0 group-hover:opacity-100 transition-opacity"
@@ -359,6 +359,14 @@ export default function App() {
           </div>
         );
 
+      case 'questions':
+        return (
+          <ImportantQuestions 
+            data={activePack.important_questions} 
+            onAskAI={handleAskAI} 
+          />
+        );
+
       case 'flashcards':
         return (
           <div className="animate-fade-in max-w-4xl mx-auto pb-12">
@@ -433,6 +441,8 @@ export default function App() {
               />
            </div>
         );
+      default:
+        return null;
     }
   };
 
@@ -605,6 +615,7 @@ export default function App() {
                      { id: 'summary', icon: LayoutDashboard, label: 'Summary' },
                      { id: 'notes', icon: FileText, label: 'Notes' },
                      { id: 'terms', icon: Book, label: 'Terms' },
+                     { id: 'questions', icon: HelpCircle, label: 'Questions' },
                      { id: 'flashcards', icon: Layers, label: 'Cards' },
                      { id: 'quiz', icon: BrainCircuit, label: 'Quiz' },
                   ].map(tab => (

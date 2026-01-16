@@ -1,3 +1,4 @@
+
 export type AppTheme = 'default' | 'emerald' | 'violet' | 'rose' | 'amber' | 'original';
 export type AppFont = 'Inter' | 'Playfair Display' | 'JetBrains Mono' | 'Quicksand';
 export type AppShape = 'sharp' | 'default' | 'rounded';
@@ -36,6 +37,17 @@ export interface MindMapData {
   mermaidCode: string;
 }
 
+export interface QuestionWithSolution {
+  question: string;
+  solution: string;
+}
+
+export interface ImportantQuestionsData {
+  one_mark: QuestionWithSolution[];
+  three_mark: QuestionWithSolution[];
+  five_mark: QuestionWithSolution[];
+}
+
 export interface StudyPackData {
   meta: {
     subject: string;
@@ -50,6 +62,7 @@ export interface StudyPackData {
   notes: NoteSection[];
   key_terms: KeyTerm[];
   flashcards: FlashcardItem[];
+  important_questions: ImportantQuestionsData;
   quiz: {
     instructions: string;
     questions: QuizQuestion[];
